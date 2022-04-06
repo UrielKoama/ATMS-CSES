@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from flask_ckeditor import CKEditor
 from flask_datepicker import datepicker
 from flask_bootstrap import Bootstrap
-
+from os import environ
 
 con = SQLAlchemy()
 DB_CSES = "database.db"
@@ -15,9 +15,9 @@ def create():
     datepicker(app)
     Bootstrap(app)
     app.config['SECRET_KEY'] = '6f92d930a02eb8ee92e1ae34a0c31d6c'
-    app.config['SQLALCHEMY_DATABASE_URI'] =f'sqlite:///{DB_CSES}'
-    # app.config['SQLALCHEMY_DATABASE_URI'] = ' '
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_CSES}'
 
+    # app.config['SQLALCHEMY_DATABASE_URI'] = ' '
 
     con.init_app(app)
 
