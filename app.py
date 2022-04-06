@@ -1,4 +1,4 @@
-from . import create
+from .__init__ import create
 
 app = create()
 if __name__ == '__main__':

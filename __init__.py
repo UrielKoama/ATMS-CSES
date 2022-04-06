@@ -7,7 +7,6 @@ from flask_datepicker import datepicker
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 
-
 con = SQLAlchemy()
 DB_CSES = "database.db"
 def create():
