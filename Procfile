@@ -1,2 +1,2 @@
-web: gunicorn ATMS-CSES:main
+web: gunicorn main:main
 
