@@ -8,13 +8,12 @@ from werkzeug.utils import secure_filename
 import os.path
 import pandas as pd
 from . import con
-from .forms import EventForm, SearchForm, UploadForm, StudentForm, EditForm
-from .models import Event, Student
+from myapp.forms import EventForm, SearchForm, UploadForm, StudentForm, EditForm
+from myapp.models import Event, Student
 from sqlalchemy import desc
 import json
 import plotly
 import plotly.express as px
-from sqlalchemy.sql import select
 
 view = Blueprint('view', __name__)
 
@@ -28,7 +27,7 @@ def home():
 def generate_code(s, k):
     #make qr code and save it to directory
     url = qrcode.make(s) # Create code
-    url.save(f'app/static/qrCode' + str(k) + '.png')
+    url.save(f'myapp/static/qrCode' + str(k) + '.png')
 
 @view.route('/events', methods=['GET','POST']) #url to get to event page
 @login_required
@@ -115,9 +114,9 @@ def delete_excel(file):
 @login_required
 def delete_event(id):
     item_delete = Event.query.get_or_404(id)
-    n = 'app/static/qrCode' + str(id) + '.png'
-    path = 'app/uploads/Sheet1' + str(id) + '.txt'
-    #file= 'app/uploads/' + filename + '.xlsx'
+    n = 'myapp/static/qrCode' + str(id) + '.png'
+    path = 'myapp/uploads/Sheet1' + str(id) + '.txt'
+    #file= 'myapp/uploads/' + filename + '.xlsx'
     nid =  current_user.id
     if nid == item_delete.user_id:
         try:
@@ -180,7 +179,7 @@ def upload_file(id): #upload file excel file and
         uploaded_file = form.name.data
         filename = secure_filename(form.name.data.filename)
         if filename != '':
-            uploaded_file.save(f'app/uploads/' + filename)
+            uploaded_file.save(f'myapp/uploads/' + filename)
             sv(k,uploaded_file,filename)
             flash("File was uploaded", category='success')
         return redirect(url_for('view.open_event', id=k))
@@ -190,18 +189,18 @@ def sv(id, uploaded_file,filename):
     #convert to text csv for each event
     xl = pd.ExcelFile(uploaded_file)
     for sheet in xl.sheet_names:
-        data = pd.read_excel(r'app/uploads/' + filename, sheet_name=sheet)
+        data = pd.read_excel(r'myapp/uploads/' + filename, sheet_name=sheet)
         df = pd.DataFrame(data, columns=['ID', 'Full Name:', 'Email2', 'Class Year:'])
         df.rename(columns={'Class Year:': 'classYear', 'Full Name:': 'name', 'Email2': 'email', 'ID': 'id'},
                   inplace=True, errors='raise')
         file = pd.DataFrame(df, columns=['id', 'classYear', 'name', 'email'])
-        path = f'app/uploads/'
+        path = f'myapp/uploads/'
         file.to_csv(path + sheet + str(id) + '.txt', header=False, index=False, sep=',')
     track(id)
 
 def track(id):
     try:
-        f_name = 'app/uploads/Sheet1' + str(id) + '.txt'
+        f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
         file = get_file(f_name)
         ids, names, emails, years = get_info(file)
         for i in range(len(ids)):
@@ -216,7 +215,7 @@ def track(id):
 @view.route('/attendance/<int:id>', methods=['GET','POST'])
 @login_required
 def track_att(id):
-    f_name = 'app/uploads/Sheet1' + str(id) + '.txt'
+    f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
     if os.path.exists(f_name):
         attendance = Student.query.filter_by(att_ls=id)
         item = Event.query.get_or_404(id)
@@ -308,13 +307,13 @@ def add_students(id):
     return render_template("delete_students.html", user=current_user, form=form)
 
 def create_figure(id):
-    data = pd.read_csv(r'app/uploads/Sheet1' + str(id)  + '.txt', names=['id', 'classYear', 'name', 'email'])
+    data = pd.read_csv(r'myapp/uploads/Sheet1' + str(id)  + '.txt', names=['id', 'classYear', 'name', 'email'])
     df = pd.DataFrame(data)
     fig = px.bar(df, x='classYear',barmode='group',labels={"classYear": "Year"})
     return fig
 
 def generate_chart(id):
-    data = pd.read_csv(r'app/uploads/Sheet1' + str(id) + '.txt', names=['id', 'classYear', 'name', 'email'])
+    data = pd.read_csv(r'myapp/uploads/Sheet1' + str(id) + '.txt', names=['id', 'classYear', 'name', 'email'])
     df = pd.DataFrame(data)
     pie = px.pie(df,names='name')
     return pie

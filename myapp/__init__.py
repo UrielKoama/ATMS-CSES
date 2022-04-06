@@ -16,7 +16,7 @@ def create():
     Bootstrap(app)
     migrate = Migrate(app, con)
     app.config['SECRET_KEY'] = '6f92d930a02eb8ee92e1ae34a0c31d6c'
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_CSES}'
+    # myapp.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_CSES}'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgres://aqlayavueuesrk:644b6748388121d0a4c18a0d8de64859fda9ad271fa93c96618e5b9d7b98ccad@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d1k0udgnkfetlk'
 
     con.init_app(app)
@@ -41,5 +41,5 @@ def create():
 
 def create_database(app):
     if not path.exists('ATMS-CSES/' + DB_CSES):
-        con.create_all(app=app) #tells flask which app it creates db for
+        con.create_all(app=app) #tells flask which myapp it creates db for
         print('Created Database!')
