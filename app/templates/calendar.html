@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block content %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          let calendarEl = document.getElementById('calendar');
+          let calendar = new FullCalendar.Calendar(calendarEl, {
+              headerToolbar: { center: 'dayGridMonth,timeGridWeek' },
+              initialView: 'dayGridMonth',
+              selectable: true,
+              events: [
+                  {% for x in data %}
+                      {
+                          title: '{{ x.title | safe}}',
+                          start: '{{ x.date }}',
+                          allDay: true,
+                      },
+                  {% endfor %}
+              ],
+              eventColor: '#378006' //customize colors
+          });
+          calendar.render();
+      });
+    </script>
+    <br/>
+{#    <a id="title" href="{{ url_for('view.open_event', id=x.id)}}">{{ x.title }}</a>#}
+    <div class="container">
+        <div id="calendar">
+        </div>
+    </div>
+
+{% endblock content %}

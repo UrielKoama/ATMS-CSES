@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% block content %}
+<br/>
+    <form method="POST" action="{{ url_for('view.filter_event')}}" class="form-control">
+        {{ form.hidden_tag() }}
+        <label for="start">Find event dates From:</label><br>
+        <input class="form-control me-2" type="date"  id="start" name="start">
+        <label for="end">To:</label><br>
+        <input class="form-control me-2" type="date" id="end"  name="end">
+        <br/>
+        <button class="btn btn-outline-secondary" type="submit"> <i class="bi bi-search"></i> Search</button>
+    </form>
+
+{% endblock content %}

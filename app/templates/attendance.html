@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block content %}
+    <h4> Attendance List</h4> <br/>
+        <table class="table table-light table-bordered" style="table-layout:auto">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Year</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for person in attendance %}
+                <tr class="table-hover" id="person.id">
+                    <td>{{ person.name }}</td>
+                    <td>{{ person.email }}</td>
+                    <td>{{ person.classYear }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    <br/>
+    {% if item.user_id == current_user.id %}
+        <a href="{{ url_for('view.open_event',id= item.id)}}" class="btn btn-outline-secondary btn-sm">
+            Back to Event <i class="bi bi-backspace-fill"></i></a>
+        <a href="{{ url_for('view.visualize', id=item.id) }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-bar-chart-line"></i>
+            View Statistics</a>
+       <a href="{{ url_for('view.delete_students', id= item.id)}}" class="btn btn-outline-dark btn-sm">
+        <i class="bi bi-person-dash"></i>
+           Remove Students</a>
+    {% endif %}
+{% endblock content %}

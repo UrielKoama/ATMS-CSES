@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block content %}
+    <br/>
+    <h2 align="center">Add Student Form Data</h2>
+    <br/>
+    <div class="content-section">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <div class="form-group">
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control") }}
+                    {% endif %}
+                </div>
+                <br/>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-dark") }}
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div>
+{#      <a href="{{ url_for('view.open_event')}}" class="btn btn-outline-secondary btn-sm">Back to Event</a>#}
+        <a href="{{ url_for('view.home')}}" class="btn btn-outline-secondary btn-sm">Back To Home</a>  <br/>
+    </div>
+{% endblock %}

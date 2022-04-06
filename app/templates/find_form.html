@@ -1,0 +1,10 @@
+{% extends "base.html" %} {% block content %}
+<br/>
+    <form method="POST" action="{{ url_for('view.search_students')}}" class="form-control">
+        {{ form.hidden_tag() }}
+        <input class="form-control me-2" type="search" placeholder="Find a Student" aria-label="Search" name="searched">
+        <br/>
+        <button class="btn btn-outline-secondary" type="submit"> <i class="bi bi-search"></i> Search</button>
+    </form>
+
+{% endblock content %}

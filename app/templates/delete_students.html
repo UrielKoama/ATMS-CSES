@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block content %}
+
+    <br><br>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+{#        <div align="right" style="padding:10px;">#}
+        <table class="table table-light table-bordered" style="table-layout:auto">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for person in attendance %}
+                <tr class="table-hover" id="person.id">
+                    <td>{{ person.name }}</td>
+                    <td>{{ person.email }}</td>
+                    <td>{{ person.classYear }}</td>
+                    <td>
+                        <button type="submit" value="{{person.id}}" id="delete_id"
+                                name="delete_id" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+{% endblock content %}
