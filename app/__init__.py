@@ -31,7 +31,7 @@ def create():
 
     from .models import User
 
-    create_database(app)
+   # create_database(app)
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
@@ -41,7 +41,7 @@ def create():
         return User.query.get(int(id))
     return app
 
-def create_database(app):
-    if not path.exists('ATMS-CSES/' + DB_CSES):
-        con.create_all(app=app) #tells flask which app it creates db for
-        print('Created Database!')
+# def create_database(app):
+#     if not path.exists('ATMS-CSES/' + DB_CSES):
+#         con.create_all(app=app) #tells flask which app it creates db for
+#         print('Created Database!')
