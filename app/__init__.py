@@ -15,9 +15,8 @@ def create():
     datepicker(app)
     Bootstrap(app)
     app.config['SECRET_KEY'] = '6f92d930a02eb8ee92e1ae34a0c31d6c'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_CSES}'
-
-    # app.config['SQLALCHEMY_DATABASE_URI'] = ' '
+    # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_CSES}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = ' postgres://aqlayavueuesrk:644b6748388121d0a4c18a0d8de64859fda9ad271fa93c96618e5b9d7b98ccad@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d1k0udgnkfetlk '
 
     con.init_app(app)
 
