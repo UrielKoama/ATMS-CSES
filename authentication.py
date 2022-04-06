@@ -55,6 +55,6 @@ def register():
         con.session.commit()
         flash('Account created!', category='success')
         return redirect(url_for('view.home'))
-    return render_template('register.html', title='Register',user=current_user, form=form)
+    return render_template('register.html', title='Register', user=current_user, form=form)
 
 

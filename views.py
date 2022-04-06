@@ -68,7 +68,7 @@ def open_event(id): #display each single event and when they were created
 def display_code(id):
     #display qrcode to each event on the click of button
     k = Event.query.get_or_404(id) #holds the id
-    return render_template("code-page.html", user=current_user, code= k )
+    return render_template("code-page.html", user=current_user, code= k)
 
 @view.route('/event/edit/<int:id>', methods=['GET','POST'])
 @login_required
@@ -129,12 +129,12 @@ def delete_event(id):
             #delete_excel(file)
             flash("Event has been deleted")
             events = Event.query.order_by(Event.timestamp)
-            return render_template("home.html",events=events, user=current_user)
+            return render_template("home.html", events=events, user=current_user)
         except requests.exceptions.RequestException as e:
             flash("Not able to delete event try again")
             print(e)
             events = Event.query.order_by(Event.timestamp)
-            return render_template("home.html",events=events, user=current_user)
+            return render_template("home.html", events=events, user=current_user)
     else:
         flash("Can't delete this")
         items = Event.query.order_by(Event.timestamp)
@@ -153,7 +153,7 @@ def search_events():
     if form.validate_on_submit():
         events = events.filter(Event.title.like('%' + form.searched.data + '%'))
         events = events.order_by(Event.title).all()
-    return render_template("search.html", form=form,searched =form.searched.data, events=events, user=current_user)
+    return render_template("search.html", form=form, searched =form.searched.data, events=events, user=current_user)
 
 # in progress
 @view.route('/find/', methods=['GET','POST'])
@@ -168,7 +168,7 @@ def search_students():
         for c, i in con.session.query(Event, Student).filter(Event.id == Student.att_ls).all():
             student = student.filter(Student.name.like('%' + form.searched.data + '%'))
             # print("Event: {} Student Name: {} Year: {}".format(c.id, c.title, i.name, i.classYear))
-        return render_template("search_students.html", user=current_user,event=event, searched=form.searched.data, form=form)
+        return render_template("search_students.html", user=current_user, event=event, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
 @view.route('/loadfile/<int:id>', methods=['POST','GET'])
@@ -184,7 +184,7 @@ def upload_file(id): #upload file excel file and
             sv(k,uploaded_file,filename)
             flash("File was uploaded", category='success')
         return redirect(url_for('view.open_event', id=k))
-    return render_template("upload-file.html",form=form, user=current_user, id=k)
+    return render_template("upload-file.html", form=form, user=current_user, id=k)
 
 def sv(id, uploaded_file,filename):
     #convert to text csv for each event
@@ -223,7 +223,7 @@ def track_att(id):
     else:
         flash("This event does not have any student data, please upload.", category='error')
         return redirect(url_for('view.open_event', id=id))
-    return render_template("attendance.html", user=current_user, attendance=attendance,item=item)
+    return render_template("attendance.html", user=current_user, attendance=attendance, item=item)
 
 
 def get_file(f):
@@ -296,7 +296,7 @@ def delete_students(id):
             #     flash("Failed", category='error')
         flash('Successfully Deleted!')
         return redirect(url_for('view.open_event', id=id))
-    return render_template("delete_students.html", user=current_user,attendance=attendance, item=item)
+    return render_template("delete_students.html", user=current_user, attendance=attendance, item=item)
 
 #in progress
 @view.route('/add_students/<int:id>', methods=['GET','POST'])
@@ -330,7 +330,7 @@ def visualize(id):
     description = """ 
     Chart shows you the amount of students that attended by each class year
         """
-    return render_template("figures.html", user=current_user, graphJSON=graph_json,header=header,description=description,
+    return render_template("figures.html", user=current_user, graphJSON=graph_json, header=header, description=description,
                            item=id, pie= graph_json2)
 
 @view.route('/calendar', methods=['GET','POST'])

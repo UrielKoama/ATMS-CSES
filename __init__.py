@@ -5,7 +5,6 @@ from flask_login import LoginManager
 from flask_ckeditor import CKEditor
 from flask_datepicker import datepicker
 from flask_bootstrap import Bootstrap
-from os import environ
 from flask_migrate import Migrate
 
 
@@ -24,7 +23,7 @@ def create():
     con.init_app(app)
 
     from .views import view
-    from app.authentication import auth
+    from .authentication import auth
 
     app.register_blueprint(view, url_prefix='/')
     app.register_blueprint(auth, url_prefix = '/auth')

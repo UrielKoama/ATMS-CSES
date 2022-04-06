@@ -1,5 +1,7 @@
 from flask import render_template
-from app import views, con
+from . import con
+import views
+
 
 @views.errorhandler(404)
 def not_found_error(error):
