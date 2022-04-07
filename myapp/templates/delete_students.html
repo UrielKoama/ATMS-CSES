@@ -10,7 +10,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Year</th>
-                    <th scope="col">Delete</th>
+                    <th scope="col">Remove a Student</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,7 +21,7 @@
                     <td>{{ person.classYear }}</td>
                     <td>
                         <button type="submit" value="{{person.id}}" id="delete_id"
-                                name="delete_id" class="btn btn-danger">Delete</button>
+                                name="delete_id" class="btn btn-danger">Remove Student</button>
                     </td>
                 </tr>
             {% endfor %}
