@@ -178,12 +178,15 @@ def upload_file(id): #upload file excel file and
     if form.validate_on_submit():
         uploaded_file = form.name.data
         filename = secure_filename(form.name.data.filename)
-        if filename != '':
-            uploaded_file.save(f'myapp/uploads/' + filename)
+        #check if file is an excel file
+        if filename.endswith(('.xlsx', '.xls')):
+            uploaded_file.save(f'app/uploads/' + filename)
             sv(k,uploaded_file,filename)
             flash("File was uploaded", category='success')
+        else:
+            flash("File type is not supported, please try again", category='error')
         return redirect(url_for('view.open_event', id=k))
-    return render_template("upload-file.html", form=form, user=current_user, id=k)
+    return render_template("upload-file.html",form=form, user=current_user, id=k)
 
 def sv(id, uploaded_file,filename):
     #convert to text csv for each event
@@ -322,15 +325,15 @@ def generate_chart(id):
 @login_required
 def visualize(id):
     fig = create_figure(id)
-    fig2 = generate_chart(id)
+    #fig2 = generate_chart(id)
     graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    graph_json2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+    #graph_json2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
     header = "Student Attendance Data"
     description = """ 
     Chart shows you the amount of students that attended by each class year
         """
     return render_template("figures.html", user=current_user, graphJSON=graph_json, header=header, description=description,
-                           item=id, pie= graph_json2)
+                           item=id) #pie= graph_json2
 
 @view.route('/calendar', methods=['GET','POST'])
 @login_required

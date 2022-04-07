@@ -10,9 +10,9 @@
             graphs = {{ graphJSON | safe}};
             Plotly.plot('chart',graphs,{});
             {#possibly remove#}
-            let pchart = "";
-            pchart = {{ pie | safe}};
-            Plotly.plot('piechar',pchart,{});
+            {#let pchart = "";#}
+            {#pchart = {{ pie | safe}};#}
+            {#Plotly.plot('piechar',pchart,{});#}
         </script>
     {% endif %}
     <br/>
