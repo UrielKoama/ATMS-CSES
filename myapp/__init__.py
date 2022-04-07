@@ -17,7 +17,9 @@ def create():
     Bootstrap(app)
     migrate = Migrate(app, con)
     app.config['SECRET_KEY'] = '6f92d930a02eb8ee92e1ae34a0c31d6c'
-    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL') # or  f'sqlite:///{DB_CSES}'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL').replace('postgres://', 'postgresql://')
+    # or  f'sqlite:///{DB_CSES}'
 
     con.init_app(app)
 
