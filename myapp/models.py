@@ -9,6 +9,7 @@ from sqlalchemy import create_engine
 
 #module to help user login
 class User(con.Model, UserMixin): #define all columns in table
+    __tablename__ = 'user'
     id = con.Column(con.Integer, primary_key=True)
     username = con.Column(con.String(20), unique=True, nullable=False)
     email = con.Column(con.String(150), unique=True, nullable=False)
@@ -21,6 +22,7 @@ class User(con.Model, UserMixin): #define all columns in table
 
 
 class Student(con.Model):
+    __tablename__ = 'student'
     id = con.Column(con.Integer,primary_key=True)
     name = con.Column(con.String(250), nullable=False)
     email = con.Column(con.String(150), nullable=False)
@@ -33,6 +35,7 @@ class Student(con.Model):
 
 
 class Event(con.Model):
+    __tablename__ = 'event'
     id = con.Column(con.Integer,primary_key=True)
     title = con.Column(con.String(250))
     note = con.Column(con.String(10000))
@@ -41,8 +44,8 @@ class Event(con.Model):
     link = con.Column(con.String(1000), nullable=False)
     #how to associate a relationship with users
     user_id = con.Column(con.Integer, con.ForeignKey('user.id'),nullable=False)
-    list = con.relationship('Student',order_by=Student.att_ls, lazy='dynamic', backref='user',
-                            passive_deletes=False,cascade="all,delete,delete-orphan")
+    list = con.relationship('Student',order_by=Student.att_ls, lazy='dynamic',
+                            passive_deletes=True,cascade="all,delete,delete-orphan")
 
     def __repr__(self):
         return '<Event {}>'.format(self.title)

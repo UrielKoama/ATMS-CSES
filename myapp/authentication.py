@@ -9,8 +9,8 @@ from flask_login import login_user,login_required,logout_user,current_user
 auth = Blueprint('auth', __name__)
 
 def add_admin():
-    pw = generate_password_hash("Leader22", method='sha256')
-    admin_user = User(username="CSES", email="success@msmary.edu", password=pw)
+    pw = generate_password_hash("Leader22", method='sha256') #need to change from plaintext
+    admin_user = User(username='CSES', email="success@msmary.edu", password=pw)
     con.session.add(admin_user)
     con.session.commit()
 
@@ -23,15 +23,15 @@ def login():
     else:
         add_admin()
     if current_user.is_authenticated:
-        return redirect(url_for('view.home'))
+        return redirect(url_for('view.calendar'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            flash('Logged in successfully!', category='success')
+            flash('Logged in successfully! Welcome', category='success')
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('view.home'))
+            return redirect(next_page) if next_page else redirect(url_for('view.calendar'))
         else:
             flash('Login Unsuccessful Please check email and password.', category='danger')
     return render_template("login.html", user=current_user, title='Login', form=form)
@@ -44,6 +44,7 @@ def logout():
     return redirect(url_for('auth.login'))
 
 @auth.route('/unauthorized', methods=['GET', 'POST'])
+@login_required
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('view.home'))
