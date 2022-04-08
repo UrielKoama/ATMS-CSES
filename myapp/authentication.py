@@ -23,7 +23,7 @@ def login():
     else:
         add_admin()
     if current_user.is_authenticated:
-        return redirect(url_for('view.calendar'))
+        return redirect(url_for('view.home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -31,7 +31,7 @@ def login():
             login_user(user, remember=form.remember.data)
             flash('Logged in successfully! Welcome', category='success')
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('view.calendar'))
+            return redirect(next_page) if next_page else redirect(url_for('view.home'))
         else:
             flash('Login Unsuccessful Please check email and password.', category='danger')
     return render_template("login.html", user=current_user, title='Login', form=form)
