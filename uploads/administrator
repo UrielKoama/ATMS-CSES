@@ -1,0 +1,9 @@
+The content of this does not matter
+
+'''
+def generate_chart(id):
+    data = pd.read_csv(r'app/uploads/Sheet1' + str(id) + '.txt', names=['id', 'classYear', 'name', 'email'])
+    df = pd.DataFrame(data)
+    pie = px.pie(df,names='name')
+    return pie
+'''

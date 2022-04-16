@@ -14,7 +14,7 @@ from sqlalchemy import desc
 import json
 import plotly
 import plotly.express as px
-from sqlalchemy_utils import get_referencing_foreign_keys
+
 
 
 view = Blueprint('view', __name__)
@@ -169,7 +169,7 @@ def search_students():
     if form.validate_on_submit():
         student = student.filter(Student.name.like('%' + form.searched.data + '%'))
         event = Student.query.filter(form.searched.data == Student.name).all()
-        event = get_referencing_foreign_keys(Event)
+        # event = get_referencing_foreign_keys(Event)
         # found = Student.query.get_or_404(form.searched.data)
         # student = student.order_by(Student.name).all()
         event = event.order_by().all()
