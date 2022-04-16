@@ -18,10 +18,29 @@
 
 {% if item.user_id == current_user.id %}
 	<a href="{{ url_for('view.edit_event', id=item.id)}}" class="btn btn-outline-primary btn-sm">Edit Event</a>
-	<a href="{{ url_for('view.delete_event', id = item.id)}}" class="btn btn-outline-danger btn-sm">Delete Event</a>
+    <a class="btn btn-outline-danger btn-sm " data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Event</a>
     <a href="{{ url_for('view.upload_file',id= item.id) }}" class="btn btn-outline-info btn-sm">Upload File</a>
     <a href="{{ url_for('view.track_att', id= item.id)}}" class="btn btn-outline-success btn-sm">View attendance List</a>
 {% endif %}
+
+  <!-- Modal -->
+    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="mdalabel"><strong>Warning</strong></h5>
+            <button type="button" class="btn-close btn-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <p>Are you sure you want to delete this event and all related information? This process cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+              <a href="{{ url_for('view.delete_event', id = item.id)}}" class="btn btn-danger">Delete Event</a>
+          </div>
+        </div>
+      </div>
+    </div>
 <a href="{{ url_for('view.home')}}" class="btn btn-outline-secondary btn-sm">Back To Home</a>  <br/>
 
 

@@ -8,12 +8,14 @@ from werkzeug.utils import secure_filename
 import os.path
 import pandas as pd
 from . import con
-from myapp.forms import EventForm, SearchForm, UploadForm, StudentForm, EditForm
-from myapp.models import Event, Student
+from .forms import EventForm, SearchForm, UploadForm, StudentForm, EditForm
+from .models import Event, Student
 from sqlalchemy import desc
 import json
 import plotly
 import plotly.express as px
+from sqlalchemy_utils import get_referencing_foreign_keys
+
 
 view = Blueprint('view', __name__)
 
@@ -27,7 +29,7 @@ def home():
 def generate_code(s, k):
     #make qr code and save it to directory
     url = qrcode.make(s) # Create code
-    url.save(f'myapp/static/qrCode' + str(k) + '.png')
+    url.save(f'app/static/qrCode' + str(k) + '.png')
 
 @view.route('/events', methods=['GET','POST']) #url to get to event page
 @login_required
@@ -67,7 +69,7 @@ def open_event(id): #display each single event and when they were created
 def display_code(id):
     #display qrcode to each event on the click of button
     k = Event.query.get_or_404(id) #holds the id
-    return render_template("code-page.html", user=current_user, code= k)
+    return render_template("code-page.html", user=current_user, code= k )
 
 @view.route('/event/edit/<int:id>', methods=['GET','POST'])
 @login_required
@@ -107,16 +109,18 @@ def delete_sheet(p):
     #     flash("Student data was never uploaded", category='warning')
 
 def delete_excel(file):
+    #pending
     if os.path.exists(file):
         os.remove(file)
+
 
 @view.route('/delete/<int:id>')
 @login_required
 def delete_event(id):
     item_delete = Event.query.get_or_404(id)
-    n = 'myapp/static/qrCode' + str(id) + '.png'
-    path = 'myapp/uploads/Sheet1' + str(id) + '.txt'
-    #file= 'myapp/uploads/' + filename + '.xlsx'
+    n = 'app/static/qrCode' + str(id) + '.png'
+    path = 'app/uploads/Sheet1' + str(id) + '.txt'
+    #file= 'app/uploads/' + filename + '.xlsx'
     nid =  current_user.id
     if nid == item_delete.user_id:
         try:
@@ -128,14 +132,14 @@ def delete_event(id):
             #delete_excel(file)
             flash("Event has been deleted")
             events = Event.query.order_by(Event.timestamp)
-            return render_template("home.html", events=events, user=current_user)
+            return render_template("home.html",events=events, user=current_user)
         except requests.exceptions.RequestException as e:
-            flash("Not able to delete event try again")
+            flash("Not able to delete event try again",category='error')
             print(e)
             events = Event.query.order_by(Event.timestamp)
-            return render_template("home.html", events=events, user=current_user)
+            return render_template("home.html",events=events, user=current_user)
     else:
-        flash("Can't delete this")
+        flash("Can't delete this event", category='error')
         items = Event.query.order_by(Event.timestamp)
         return render_template("home.html", events=items, user=current_user)
 
@@ -152,22 +156,24 @@ def search_events():
     if form.validate_on_submit():
         events = events.filter(Event.title.like('%' + form.searched.data + '%'))
         events = events.order_by(Event.title).all()
-    return render_template("search.html", form=form, searched =form.searched.data, events=events, user=current_user)
+    return render_template("search.html", form=form,searched =form.searched.data, events=events, user=current_user)
 
 # in progress
-@view.route('/find/', methods=['GET','POST'])
+@view.route('/find/student', methods=['GET','POST'])
 @login_required
 def search_students():
     form = SearchForm()
-    student = Student.query
+    # student = Student.query
     event = Event.query
+    student = Student.query.filter_by(att_ls=id)
     if form.validate_on_submit():
-        # student = student.filter(Student.name.like('%' + form.searched.data + '%'))
+        student = student.filter(Student.name.like('%' + form.searched.data + '%'))
+        event = Student.query.filter(form.searched.data == Student.name).all()
+        event = get_referencing_foreign_keys(Event)
+        # found = Student.query.get_or_404(form.searched.data)
         # student = student.order_by(Student.name).all()
-        for c, i in con.session.query(Event, Student).filter(Event.id == Student.att_ls).all():
-            student = student.filter(Student.name.like('%' + form.searched.data + '%'))
-            # print("Event: {} Student Name: {} Year: {}".format(c.id, c.title, i.name, i.classYear))
-        return render_template("search_students.html", user=current_user, event=event, searched=form.searched.data, form=form)
+        event = event.order_by().all()
+        return render_template("search.html", user=current_user,events=event, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
 @view.route('/loadfile/<int:id>', methods=['POST','GET'])
@@ -184,7 +190,7 @@ def upload_file(id): #upload file excel file and
             sv(k,uploaded_file,filename)
             flash("File was uploaded", category='success')
         else:
-            flash("File type is not supported, please try again", category='error')
+            flash("File type is not supported", category='error')
         return redirect(url_for('view.open_event', id=k))
     return render_template("upload-file.html",form=form, user=current_user, id=k)
 
@@ -192,18 +198,16 @@ def sv(id, uploaded_file,filename):
     #convert to text csv for each event
     xl = pd.ExcelFile(uploaded_file)
     for sheet in xl.sheet_names:
-        data = pd.read_excel(r'myapp/uploads/' + filename, sheet_name=sheet)
-        df = pd.DataFrame(data, columns=['ID', 'Full Name:', 'Email2', 'Class Year:'])
-        df.rename(columns={'Class Year:': 'classYear', 'Full Name:': 'name', 'Email2': 'email', 'ID': 'id'},
-                  inplace=True, errors='raise')
-        file = pd.DataFrame(df, columns=['id', 'classYear', 'name', 'email'])
-        path = f'myapp/uploads/'
+        new_cols = ['id','email','name','classYear']
+        df = pd.read_excel(r'app/uploads/' + filename, names=new_cols, sheet_name=sheet )
+        file = pd.DataFrame(df, columns=['id','email','name','classYear'])
+        path = f'app/uploads/'
         file.to_csv(path + sheet + str(id) + '.txt', header=False, index=False, sep=',')
     track(id)
 
 def track(id):
     try:
-        f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
+        f_name = 'app/uploads/Sheet1' + str(id) + '.txt'
         file = get_file(f_name)
         ids, names, emails, years = get_info(file)
         for i in range(len(ids)):
@@ -212,20 +216,21 @@ def track(id):
             con.session.commit()
         return redirect(url_for('view.track_att', id=id))
     except requests.exceptions.RequestException as e:
+        print(e)
         flash("Invalid data", category='error')
         return redirect(url_for('view.open_event', id=id))
 
 @view.route('/attendance/<int:id>', methods=['GET','POST'])
 @login_required
 def track_att(id):
-    f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
+    f_name = 'app/uploads/Sheet1' + str(id) + '.txt'
     if os.path.exists(f_name):
         attendance = Student.query.filter_by(att_ls=id)
         item = Event.query.get_or_404(id)
     else:
         flash("This event does not have any student data, please upload.", category='error')
         return redirect(url_for('view.open_event', id=id))
-    return render_template("attendance.html", user=current_user, attendance=attendance, item=item)
+    return render_template("attendance.html", user=current_user, attendance=attendance,item=item)
 
 
 def get_file(f):
@@ -280,61 +285,74 @@ def filter_event():
         return render_template("search.html", user=current_user, form = form, events= refined_query)
     return render_template("filter.html", user=current_user, form= form)
 
-# in progress
+def remove_sheet(filename, student):
+    # this will delete from text file so visuals can update
+    with open(filename, 'r') as fr:
+        lines = fr.readlines()
+    with open(filename, "w") as f:
+        for line in lines:
+            if line.find(student) != -1:
+                pass
+            else:
+                f.write(line)
+
 @view.route('/delete_students/<int:id>', methods=['POST', 'GET'])
 @login_required
 def delete_students(id):
-    item = Event.query.get_or_404(id)
-    attendance = Student.query.filter_by(att_ls=id)
+    event_num = Event.query.get_or_404(id)
+    filename = 'app/uploads/Sheet1' + str(id) + '.txt'
+    attendance = Student.query.filter_by(att_ls=id).all()
     if request.method == 'POST':
-        student = request.form.get("delete_id")
-        item_delete = con.session.query(Event, Student).filter(Event.id == Student.att_ls).all()
-        for c, i in item_delete:
-            print("Event: {} Student Name: {} Year: {}".format(c.id, c.title, i.name, i.classYear))
-            con.session.delete(student== i.id)
+        if len(attendance) > 1:
+            student_data = request.form.get("delete_id")
+            item_delete = Student.query.get_or_404(student_data)
+            student = item_delete.name
+            con.session.delete(item_delete)
             con.session.commit()
-            # flash("success")
-            # else:
-            #     flash("Failed", category='error')
-        flash('Successfully Deleted!')
-        return redirect(url_for('view.open_event', id=id))
-    return render_template("delete_students.html", user=current_user, attendance=attendance, item=item)
+            remove_sheet(filename,student)
+            flash('The student was successfully removed from the list.', category='success')
+            return redirect(url_for('view.open_event', id=id))
+        else:
+            flash("There must be at least 1 person on the attendance list",category='error')
+    return render_template("delete_students.html", user=current_user,attendance=attendance, item=event_num)
 
-#in progress
-@view.route('/add_students/<int:id>', methods=['GET','POST'])
+
+@view.route('/attendance/add_students/<int:num>', methods=['GET','POST'])
 @login_required
-def add_students(id):
-    form = StudentForm()
-    if form.validate_on_submit():
-        pass
-    return render_template("delete_students.html", user=current_user, form=form)
+def add_students(num):
+    item = Event.query.get_or_404(num)
+    form= StudentForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        s_name = request.form.get("name")
+        s_email = request.form.get("email")
+        s_year = request.form.get("year")
+        new_student = Student(name=form.name.data, email=form.email.data, classYear=form.year.data,att_ls=num)
+        con.session.add(new_student)
+        con.session.commit()
+        flash('New student was added', category='success')
+        return redirect(url_for('view.track_att', id=num))
+    return render_template("attendance.html", user=current_user, form=form, item=item)
 
 def create_figure(id):
-    data = pd.read_csv(r'myapp/uploads/Sheet1' + str(id)  + '.txt', names=['id', 'classYear', 'name', 'email'])
+    data = pd.read_csv(r'app/uploads/Sheet1' + str(id)  + '.txt', names=['id','email','name','classYear'])
     df = pd.DataFrame(data)
     fig = px.bar(df, x='classYear',barmode='group',labels={"classYear": "Year"})
     return fig
-
-def generate_chart(id):
-    data = pd.read_csv(r'myapp/uploads/Sheet1' + str(id) + '.txt', names=['id', 'classYear', 'name', 'email'])
-    df = pd.DataFrame(data)
-    pie = px.pie(df,names='name')
-    return pie
 
 @view.route("/plot/<int:id>", methods=['GET', 'POST'])
 @login_required
 def visualize(id):
     fig = create_figure(id)
-    #fig2 = generate_chart(id)
+    # fig2 = generate_chart(id)
     graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    #graph_json2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+    # graph_json2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
     header = "Student Attendance Data"
     description = """ 
     Chart shows you the amount of students that attended by each class year
         """
-    return render_template("figures.html", user=current_user, graphJSON=graph_json, header=header, description=description,
-                           item=id) #pie= graph_json2
-
+    return render_template("figures.html", user=current_user, graphJSON=graph_json,header=header,description=description,
+                           item=id)
+# , pie= graph_json2
 @view.route('/calendar', methods=['GET','POST'])
 @login_required
 def calendar():

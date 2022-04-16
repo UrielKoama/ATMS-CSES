@@ -14,7 +14,7 @@ def add_admin():
     con.session.add(admin_user)
     con.session.commit()
 
-#Leader22
+
 @auth.route('/login',methods=['GET','POST'])
 def login():
     admin_user = User.query.filter_by(email="success@msmary.edu").first()
@@ -33,7 +33,7 @@ def login():
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('view.home'))
         else:
-            flash('Login Unsuccessful Please check email and password.', category='danger')
+            flash('Login Unsuccessful Please check email and password.', category='error')
     return render_template("login.html", user=current_user, title='Login', form=form)
 
 @auth.route('/logout') #decorator

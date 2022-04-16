@@ -1,5 +1,9 @@
 {% extends "base.html" %} {% block content %}
-    <h4> Attendance List</h4> <br/>
+    <h3 align="center"> Attendance List</h3> <br/>
+          <!-- Button trigger modal -->
+        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" style="float: right;"
+                data-bs-target="#studentModal"> Add New Students
+        </button>
         <table class="table table-light table-bordered" style="table-layout:auto">
             <thead>
                 <tr>
@@ -18,15 +22,51 @@
             {% endfor %}
             </tbody>
         </table>
+
+    <!-- Student Modal -->
+    <div class="modal" id="studentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="studentModalLabel">Add a New Student</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="{{ url_for('view.add_students',num=item.id)}}" method="POST" class="form-control">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                  <label>Full Name:</label>
+                  <input class="form-control" name="name" id="name" required="1" type="text">
+                </div>
+                <div class="form-group">
+                  <label>Mount Email:</label>
+                  <input class="form-control" name="email" id="email" required="1" type="email">
+                </div>
+                <div class="form-group">
+                  <label>Class Year: </label>
+                  <input class="form-control" name="year" id="year" required="1" type="text">
+                </div>
+                <br/>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Add student</button>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <br/>
     {% if item.user_id == current_user.id %}
         <a href="{{ url_for('view.open_event',id= item.id)}}" class="btn btn-outline-secondary btn-sm">
-            Back to Event <i class="bi bi-backspace-fill"></i></a>
+          <i class="bi bi-arrow-left-circle-fill"></i> Back to Event</a>
         <a href="{{ url_for('view.visualize', id=item.id) }}" class="btn btn-outline-primary btn-sm">
         <i class="bi bi-bar-chart-line"></i>
             View Statistics</a>
        <a href="{{ url_for('view.delete_students', id= item.id)}}" class="btn btn-outline-dark btn-sm">
-        <i class="bi bi-person-dash"></i>
-           Remove Students</a>
+        <i class="bi bi-person-dash"></i> Remove Students</a>
     {% endif %}
 {% endblock content %}

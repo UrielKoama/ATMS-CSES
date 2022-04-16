@@ -8,7 +8,7 @@ h1{
   font-size:60px;
 }
 
-h2, h3, h4, h5, h6 {
+h2, h3, h4, h6 {
   color: #444444;
 }
 
@@ -70,11 +70,6 @@ a.article-title:hover {
   height: 25px;
   vertical-align: middle;
 }
-/*.container {*/
-/*  display: flex;*/
-/*  justify-content: center;*/
-/*  align-items: center;*/
-/*}*/
 
 .nav-links{
   display: inline-flex;
@@ -88,4 +83,20 @@ a.article-title:hover {
     border-radius: 50%;
     overflow: hidden;
     margin-top: -6px;
+}
+
+ #deleteModal .modal-content{
+    color: #9f3d00;
+    background-color: #FEEFB3;
+}
+
+ .modal-title{
+   text-align: center;
+ }
+ #deleteModal .modal-header{
+     border-bottom-color: black;
+ }
+
+#deleteModal .modal-footer {
+    border-top-color: black;
 }

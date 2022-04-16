@@ -1,31 +1,49 @@
 {% extends "base.html" %} {% block content %}
-
     <br><br>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-{#        <div align="right" style="padding:10px;">#}
-        <table class="table table-light table-bordered" style="table-layout:auto">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Year</th>
-                    <th scope="col">Remove a Student</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for person in attendance %}
-                <tr class="table-hover" id="person.id">
-                    <td>{{ person.name }}</td>
-                    <td>{{ person.email }}</td>
-                    <td>{{ person.classYear }}</td>
-                    <td>
-                        <button type="submit" value="{{person.id}}" id="delete_id"
-                                name="delete_id" class="btn btn-sm btn-danger">Remove Student</button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </form>
+    <table class="table table-light table-bordered" style="table-layout:auto">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Year</th>
+                <th scope="col">Remove a Student</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for person in attendance %}
+            <tr class="table-hover" id="person.id">
+                <td>{{ person.name }}</td>
+                <td>{{ person.email }}</td>
+                <td>{{ person.classYear }}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-x-circle-fill"></i> Remove Student</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+                <!-- Modal delete  -->
+    {% for person in attendance %}
+        <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="mdalabel"><strong>Warning</strong></h5>
+                <button type="button" class="btn-close btn-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>Are you sure you want to remove this student from the list? This process cannot be undone.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST">
+                      {{ form.hidden_tag() }}
+                    <button type="submit" class="btn btn-danger" id="delete_id" name="delete_id" value="{{person.id}}">Delete</button>
+                  </form>
+              </div>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+    <a href="{{ url_for('view.track_att', id= item.id)}}" class="btn btn-outline-success btn-sm">Back to Attendance List</a>
 {% endblock content %}
