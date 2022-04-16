@@ -1,29 +1,23 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}{% block content %}
+<br/>
+{% for x in events %}
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <h4><a href="{{ url_for('view.open_event', id=x.id)}}">{{ x.title }}</a></h4>
+        <small> Date of Event: {{ x.date.strftime('%A %b %d %Y at %I:%M %p ') }}<br/> </small> <br/><br/>
+        {{ x.note|safe }}
+        <br/><br/>
+        <a href="{{ url_for('view.open_event',id= x.id)}}" class="btn btn-outline-secondary">View Event</a>
+        {% if x.user_id == current_user.id %}
+            <a href="{{ url_for('view.edit_event',id = x.id)}}" class="btn btn-outline-primary">Edit Event</a>
+            <a class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Event</a>
+        {% endif %}
+        <br/><br/>
+    </div>
     <br/>
-<div class="shadow p-3 mb-5 bg-body rounded">
-	<h2>{{ item.title }}</h2>
-	<small>Date of Event: {{ item.date.strftime('%A %B %d %Y at %I:%M %p ') }} <br/>
-	Created on: {{ item.timestamp.strftime('%m/%d/%Y, %I:%M %p') }}</small> <br/><br/>
-	{{ item.note | safe }}<br/><br/>
-    <button type="button" class="btn btn-secondary btn-sm" onclick="window.open('{{url_for('view.display_code', id=item.id)}}','_blank');">
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
-            <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"></path>
-            <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"></path>
-            <path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z"></path>
-            <path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z"></path>
-            <path d="M12 9h2V8h-2v1Z"></path>
-        </svg>
-    </button>
-</div>
+{% endfor %}
 
-{% if item.user_id == current_user.id %}
-	<a href="{{ url_for('view.edit_event', id=item.id)}}" class="btn btn-outline-primary btn-sm">Edit Event</a>
-    <a class="btn btn-outline-danger btn-sm " data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Event</a>
-    <a href="{{ url_for('view.upload_file',id= item.id) }}" class="btn btn-outline-info btn-sm">Upload File</a>
-    <a href="{{ url_for('view.track_att', id= item.id)}}" class="btn btn-outline-success btn-sm">View attendance List</a>
-{% endif %}
-
-  <!-- Modal -->
+     <!-- Modal -->
+{% for x in events %}
     <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -32,17 +26,14 @@
             <button type="button" class="btn-close btn-danger" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Are you sure you want to delete this event and all related information? This process cannot be undone.</p>
+              <p>Are you sure you want to delete this event and all related information? This process cannot be undone.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
-              <a href="{{ url_for('view.delete_event', id = item.id)}}" class="btn btn-danger">Delete Event</a>
+            <a class="btn btn-danger" href="{{ url_for('view.delete_event', id= x.id)}}">Delete Event</a>
           </div>
         </div>
       </div>
     </div>
-<a href="{{ url_for('view.home')}}" class="btn btn-outline-secondary btn-sm">Back To Home</a>  <br/>
-
-
-    <br/>
-{% endblock %}
+{% endfor %}
+{% endblock content %}
