@@ -165,7 +165,7 @@ def search_students():
     student = Student.query.filter_by(att_ls=id)
     if form.validate_on_submit():
         student = student.filter(Student.name.like('%' + form.searched.data + '%'))
-        event = Student.query.filter(form.searched.data == Student.name).all()
+        # event = Student.query.filter(form.searched.data == Student.name).all()
         # event = get_referencing_foreign_keys(Event)
         # found = Student.query.get_or_404(form.searched.data)
         # student = student.order_by(Student.name).all()
