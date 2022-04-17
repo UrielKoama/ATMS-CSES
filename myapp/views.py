@@ -28,7 +28,7 @@ def home():
 def generate_code(s, k):
     #make qr code and save it to directory
     url = qrcode.make(s) # Create code
-    url.save(f'app/static/qrCode' + str(k) + '.png')
+    url.save(f'myapp/static/qrCode' + str(k) + '.png')
 
 @view.route('/events', methods=['GET','POST']) #url to get to event page
 @login_required
@@ -66,8 +66,8 @@ def open_event(id): #display each single event and when they were created
 @login_required
 def display_code(id):
     #display qrcode to each event on the click of button
-    k = Event.query.get_or_404(id) #holds the id
-    return render_template("code-page.html", user=current_user, code= k )
+    code_id = Event.query.get_or_404(id) #holds the id
+    return render_template("code-page.html", user=current_user, code= code_id )
 
 @view.route('/event/edit/<int:id>', methods=['GET','POST'])
 @login_required
@@ -115,9 +115,9 @@ def delete_excel(file):
 @login_required
 def delete_event(id):
     item_delete = Event.query.get_or_404(id)
-    n = 'app/static/qrCode' + str(id) + '.png'
-    path = 'app/uploads/Sheet1' + str(id) + '.txt'
-    #file= 'app/uploads/' + filename + '.xlsx'
+    n = 'myapp/static/qrCode' + str(id) + '.png'
+    path = 'myapp/uploads/Sheet1' + str(id) + '.txt'
+    #file= 'myapp/uploads/' + filename + '.xlsx'
     nid =  current_user.id
     if nid == item_delete.user_id:
         try:
@@ -183,7 +183,7 @@ def upload_file(id): #upload file excel file and
         filename = secure_filename(form.name.data.filename)
         #check if file is an excel file
         if filename.endswith(('.xlsx', '.xls')):
-            uploaded_file.save(f'app/uploads/' + filename)
+            uploaded_file.save(f'myapp/uploads/' + filename)
             sv(k,uploaded_file,filename)
             flash("File was uploaded", category='success')
         else:
@@ -196,20 +196,20 @@ def sv(id, uploaded_file,filename):
     xl = pd.ExcelFile(uploaded_file)
     for sheet in xl.sheet_names:
         # new_cols = ['n0','email','name','classYear']
-        # df = pd.read_excel(r'app/uploads/' + filename, names=new_cols, sheet_name=sheet)
-        data = pd.read_excel(r'app/uploads/' + filename, sheet_name=sheet)
+        # df = pd.read_excel(r'myapp/uploads/' + filename, names=new_cols, sheet_name=sheet)
+        data = pd.read_excel(r'myapp/uploads/' + filename, sheet_name=sheet)
         # file = pd.DataFrame(df, columns=['n0','email','name','classYear'])
         df = pd.DataFrame(data, columns=['ID', 'Full Name:', 'Email2', 'Class Year:'])
         df.rename(columns={'Class Year:': 'classYear', 'Full Name:': 'name', 'Email2': 'email', 'ID': 'n0'},
                 inplace=True, errors='raise')
         file = pd.DataFrame(df, columns=['n0','email','name','classYear'])
-        path = f'app/uploads/'
+        path = f'myapp/uploads/'
         file.to_csv(path + sheet + str(id) + '.txt', header=False, index=False, sep=',')
     track(id)
 
 def track(id):
     try:
-        f_name = 'app/uploads/Sheet1' + str(id) + '.txt'
+        f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
         file = get_file(f_name)
         ids, names, emails, years = get_info(file)
         for i in range(len(names)):
@@ -225,7 +225,7 @@ def track(id):
 @view.route('/attendance/<int:id>', methods=['GET','POST'])
 @login_required
 def track_att(id):
-    f_name = 'app/uploads/Sheet1' + str(id) + '.txt'
+    f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
     if os.path.exists(f_name):
         attendance = Student.query.filter_by(att_ls=id).all()
         item = Event.query.get_or_404(id)
@@ -298,7 +298,7 @@ def remove_sheet(filename, student):
 @login_required
 def delete_students(id):
     event_num = Event.query.get_or_404(id)
-    filename = 'app/uploads/Sheet1' + str(id) + '.txt'
+    filename = 'myapp/uploads/Sheet1' + str(id) + '.txt'
     attendance = Student.query.filter_by(att_ls=id).all()
     if request.method == 'POST':
         if len(attendance) > 1:
@@ -331,7 +331,7 @@ def add_sheet(filename,student_info):
 def add_students(num):
     item = Event.query.get_or_404(num)
     form= StudentForm()
-    filename = 'app/uploads/Sheet1' + str(num) + '.txt'
+    filename = 'myapp/uploads/Sheet1' + str(num) + '.txt'
     #add name to sheet as well
     if request.method == 'POST' and form.validate_on_submit():
         s_name = request.form.get("name")
@@ -347,7 +347,7 @@ def add_students(num):
     return render_template("attendance.html", user=current_user, form=form, item=item)
 
 def create_figure(id):
-    data = pd.read_csv(r'app/uploads/Sheet1' + str(id)  + '.txt', names=['n0','email','name','classYear'])
+    data = pd.read_csv(r'myapp/uploads/Sheet1' + str(id)  + '.txt', names=['n0','email','name','classYear'])
     df = pd.DataFrame(data)
     fig = px.bar(df, x='classYear',barmode='group',labels={"classYear": "Year"})
     return fig
