@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 engine = create_engine('postgresql://', echo=True)
-# SQLALCHEMY_DATABASE_URI
+
 Base.metadata.create_all(engine)
 
 #module to help user login
