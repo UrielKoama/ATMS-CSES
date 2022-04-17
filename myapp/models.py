@@ -4,9 +4,10 @@ from flask_login import UserMixin
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 
-# Base = declarative_base()
-# engine = create_engine('sqlite:///database.db', echo=True)
-# Base.metadata.create_all(engine)
+Base = declarative_base()
+engine = create_engine('postgresql://', echo=True)
+# SQLALCHEMY_DATABASE_URI
+Base.metadata.create_all(engine)
 
 #module to help user login
 class User(con.Model, UserMixin): #define all columns in table
@@ -25,7 +26,7 @@ class User(con.Model, UserMixin): #define all columns in table
     def __repr__(self): #how object is printed
         return '<User {}>'.format(self.username)
 
-class Event(con.Model):
+class Event(con.Model, Base):
     __tablename__ = 'event'
     id = con.Column(con.Integer,primary_key=True)
     title = con.Column(con.String(250))
@@ -52,7 +53,7 @@ class Event(con.Model):
     def __repr__(self):
         return '<Event {}>'.format(self.title)
 
-class Student(con.Model):
+class Student(con.Model, Base):
     __tablename__ = 'student'
     id = con.Column(con.Integer,primary_key=True)
     name = con.Column(con.String(250), nullable=False)
