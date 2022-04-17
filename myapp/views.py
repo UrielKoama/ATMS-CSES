@@ -294,12 +294,12 @@ def remove_sheet(filename, student):
             else:
                 f.write(line)
 
-@view.route('/attendance/delete_students/<int:id>', methods=['POST', 'GET'])
+@view.route('/attendance/delete_students/<int:num>', methods=['POST', 'GET'])
 @login_required
-def delete_students(id):
-    event_num = Event.query.get_or_404(id)
-    filename = 'myapp/uploads/Sheet1' + str(id) + '.txt'
-    attendance = Student.query.filter_by(att_ls=id).all()
+def delete_students(num):
+    event_num = Event.query.get_or_404(num)
+    filename = 'myapp/uploads/Sheet1' + str(num) + '.txt'
+    attendance = Student.query.filter_by(att_ls=num).all()
     if request.method == 'POST':
         if len(attendance) > 1:
             student_num = request.form.get("delete_id")
@@ -309,7 +309,7 @@ def delete_students(id):
             con.session.commit()
             remove_sheet(filename,student)
             flash('The student was successfully removed from the list.', category='success')
-            return redirect(url_for('view.track_att', id=id))
+            return redirect(url_for('view.track_att', id=num))
         else:
             flash("There must be at least 1 person on the attendance list",category='error')
     return render_template("delete_students.html", user=current_user,attendance=attendance, item=event_num)
