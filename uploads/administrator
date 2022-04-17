@@ -6,4 +6,8 @@ def generate_chart(id):
     df = pd.DataFrame(data)
     pie = px.pie(df,names='name')
     return pie
+
+    # graph_json2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+
+    # , pie= graph_json2
 '''
