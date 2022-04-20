@@ -85,7 +85,7 @@ a.article-title:hover {
     margin-top: -6px;
 }
 
- #deleteModal .modal-content{
+.modal-content{
     color: #9f3d00;
     background-color: #FEEFB3;
 }
@@ -94,7 +94,7 @@ a.article-title:hover {
    text-align: center;
  }
 
- .modal-header{
+.modal-header{
      border-bottom-color: black;
  }
 
@@ -102,13 +102,6 @@ a.article-title:hover {
     border-top-color: black;
 }
 
- #deleteModal .modal-header{
-     border-bottom-color: black;
- }
-
-#deleteModal .modal-footer {
-    border-top-color: black;
-}
 
 #studentModal .modal-content{
     background-color: white;

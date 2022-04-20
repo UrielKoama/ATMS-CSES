@@ -299,7 +299,7 @@ def delete_students(num):
     event_num = Event.query.get_or_404(num)
     filename = 'myapp/uploads/Sheet1' + str(num) + '.txt'
     attendance = Student.query.filter_by(att_ls=num).all()
-    if request.method == 'POST':
+    if request.method == 'POST' or request.method == 'GET':
         if len(attendance) > 1:
             student_num = request.form.get("delete_id")
             item_delete = Student.query.get_or_404(student_num)
