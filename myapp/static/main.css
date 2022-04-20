@@ -93,10 +93,27 @@ a.article-title:hover {
  .modal-title{
    text-align: center;
  }
+
+ .modal-header{
+     border-bottom-color: black;
+ }
+
+ .modal-footer {
+    border-top-color: black;
+}
+
  #deleteModal .modal-header{
      border-bottom-color: black;
  }
 
 #deleteModal .modal-footer {
     border-top-color: black;
+}
+
+#studentModal .modal-content{
+    background-color: white;
+}
+
+#studentModal .modal-title{
+    color: black;
 }

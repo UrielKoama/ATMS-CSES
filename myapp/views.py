@@ -111,22 +111,21 @@ def delete_excel(file):
         os.remove(file)
 
 
-@view.route('/delete/<int:id>')
+@view.route('/delete/<int:num>')
 @login_required
-def delete_event(id):
-    item_delete = Event.query.get_or_404(id)
-    n = 'myapp/static/qrCode' + str(id) + '.png'
-    path = 'myapp/uploads/Sheet1' + str(id) + '.txt'
-    #file= 'myapp/uploads/' + filename + '.xlsx'
-    nid =  current_user.id
-    if nid == item_delete.user_id:
+def delete_event(num):
+    item_delete = Event.query.get_or_404(num)
+    n = 'app/static/qrCode' + str(num) + '.png'
+    path = 'app/uploads/Sheet1' + str(num) + '.txt'
+    #file= 'app/uploads/' + filename + '.xlsx'
+    nid =  current_user
+    if nid:
         try:
             con.session.delete(item_delete)
             con.session.commit()
             delete_pic(n)
             delete_sheet(path)
-            # should delete the excel file when event is deleted
-            #delete_excel(file)
+            # should delete the excel file when event is deleted#delete_excel(file)
             flash("Event has been deleted")
             events = Event.query.order_by(Event.timestamp)
             return redirect(url_for('view.home'))

@@ -51,5 +51,5 @@ class StudentForm(FlaskForm):
 	submit = SubmitField('Add Student')
 
 class UploadForm(FlaskForm):
-	name = FileField('File')
+	name = FileField('File',validators=[DataRequired()])
 	submit = SubmitField("Submit")

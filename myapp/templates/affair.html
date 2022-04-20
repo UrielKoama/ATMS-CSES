@@ -18,13 +18,13 @@
 
 {% if item.user_id == current_user.id %}
 	<a href="{{ url_for('view.edit_event', id=item.id)}}" class="btn btn-outline-primary btn-sm">Edit Event</a>
-    <a class="btn btn-outline-danger btn-sm " data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Event</a>
-    <a href="{{ url_for('view.upload_file',id= item.id) }}" class="btn btn-outline-info btn-sm">Upload File</a>
+    <a class="btn btn-outline-danger btn-sm " data-bs-toggle="modal" data-bs-target="#deleteEventModal">Delete Event</a>
+    <a href="{{ url_for('view.upload_file',id= item.id) }}" class="btn btn-outline-info btn-sm" onClick='this.disabled = true;'>Upload File</a>
     <a href="{{ url_for('view.track_att', id= item.id)}}" class="btn btn-outline-success btn-sm">View attendance List</a>
 {% endif %}
 
   <!-- Modal -->
-    <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteEventModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -36,7 +36,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
-              <a href="{{ url_for('view.delete_event', id = item.id)}}" class="btn btn-danger">Delete Event</a>
+              <a href="{{ url_for('view.delete_event', num = item.id)}}" class="btn btn-danger">Delete Event</a>
           </div>
         </div>
       </div>

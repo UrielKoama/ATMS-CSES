@@ -14,6 +14,7 @@
                           title: '{{ x.title | safe}}',
                           start: '{{ x.date }}',
                           allDay: true,
+                          url: '/event/open/{{x.id}}',
                       },
                   {% endfor %}
               ],
