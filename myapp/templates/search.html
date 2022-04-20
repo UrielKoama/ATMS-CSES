@@ -12,7 +12,7 @@
         <a href="{{ url_for('view.open_event',id= x.id)}}" class="btn btn-outline-secondary">View Event</a>
             {% if x.user_id == current_user.id %}
                 <a href="{{ url_for('view.edit_event',id = x.id)}}" class="btn btn-outline-primary">Edit Event</a>
-                <a href="{{ url_for('view.delete_event', id= x.id)}}" class="btn btn-outline-danger">Delete Event</a>
+                <a href="{{ url_for('view.delete_event', num= x.id)}}" class="btn btn-outline-danger">Delete Event</a>
             {% endif %}<br/><br/>
             </div><br/>
         {% endfor %}
