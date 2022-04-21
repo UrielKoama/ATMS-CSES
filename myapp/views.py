@@ -293,7 +293,14 @@ def remove_sheet(filename, student):
             else:
                 f.write(line)
 
-@view.route('/attendance/delete_students/<int:no>', methods=['POST', 'GET'])
+@view.route('list_delete/<int:num>', methods=['POST','GET'])
+@login_required
+def list_delete(num):
+    event_num = Event.query.get_or_404(num)
+    attendance = Student.query.filter_by(att_ls=num).all()
+    return render_template("delete_students.html", user=current_user,attendance=attendance,item=event_num)
+
+@view.route('/delete_students/<int:no>', methods=['POST', 'GET'])
 @login_required
 def delete_students(no):
     event_num = Event.query.get_or_404(no)
