@@ -293,9 +293,9 @@ def remove_sheet(filename, student):
             else:
                 f.write(line)
 
-@view.route('/attendance/delete_students/<int:num>', methods=['POST', 'GET'])
+@view.route('/attendance/delete_students/<int:no>', methods=['POST', 'GET'])
 @login_required
-def delete_students(num):
+def delete_students(no):
     event_num = Event.query.get_or_404(num)
     filename = 'myapp/uploads/Sheet1' + str(num) + '.txt'
     attendance = Student.query.filter_by(att_ls=num).all()
