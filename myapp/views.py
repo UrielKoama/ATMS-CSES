@@ -297,7 +297,7 @@ def remove_sheet(filename, student):
 @login_required
 def delete_students(e_num):
     event_num = Event.query.get_or_404(e_num)
-    filename = 'app/uploads/Sheet1' + str(e_num) + '.txt'
+    filename = 'myapp/uploads/Sheet1' + str(e_num) + '.txt'
     attendance = Student.query.filter_by(att_ls=e_num).all()
     if request.method == 'POST':
         student_num = request.form.get("delete_id")
