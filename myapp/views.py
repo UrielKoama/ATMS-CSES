@@ -168,7 +168,7 @@ def search_students():
         # event = get_referencing_foreign_keys(Event)
         # found = Student.query.get_or_404(form.searched.data)
         # student = student.order_by(Student.name).all()
-        event = event.order_by().all()
+        # event = event.order_by().all()
         return render_template("search.html", user=current_user,events=event, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
