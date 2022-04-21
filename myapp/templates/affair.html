@@ -5,7 +5,7 @@
 	<small>Date of Event: {{ item.date.strftime('%A %B %d %Y at %I:%M %p ') }} <br/>
 	Created on: {{ item.timestamp.strftime('%m/%d/%Y, %I:%M %p') }}</small> <br/><br/>
 	{{ item.note | safe }}<br/><br/>
-    <button type="button" class="btn btn-secondary btn-sm" onclick="window.open('{{url_for('view.display_code', id=item.id)}}','_blank');">
+    <button type="button" class="btn btn-secondary btn-sm" onclick="window.open('{{url_for('view.display_code', n=item.id)}}','_blank');">
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
             <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"></path>
             <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"></path>
