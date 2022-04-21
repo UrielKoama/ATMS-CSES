@@ -2,7 +2,7 @@
 <br/>
 {% for x in events %}
     <div class="shadow p-3 mb-5 bg-body rounded">
-        <h4><a href="{{ url_for('view.open_event', id=x.id)}}">{{ x.title }}</a></h4>
+        <h4><a href="{{ url_for('view.open_event', value=x.id)}}">{{ x.title }}</a></h4>
         <small> Date of Event: {{ x.date.strftime('%A %b %d %Y at %I:%M %p ') }}<br/> </small> <br/><br/>
         {{ x.note|safe }}
         <br/><br/>
