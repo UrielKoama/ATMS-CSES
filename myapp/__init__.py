@@ -9,13 +9,14 @@ from flask_migrate import Migrate
 from os import environ
 
 con = SQLAlchemy()
+migrate = Migrate()
 DB_CSES = "database.db"
 def create():
     app = Flask(__name__)
     CKEditor(app)
     datepicker(app)
     Bootstrap(app)
-    migrate = Migrate(app, con)
+    migrate.init_app(app,con)
     app.config['SECRET_KEY'] = '6f92d930a02eb8ee92e1ae34a0c31d6c'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL').replace('postgres://', 'postgresql://')

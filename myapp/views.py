@@ -56,18 +56,18 @@ def add_events():
     return render_template("events.html", user=current_user, title='New Event',
                            form=form, legend='Add New Events')
 
-@view.route('/event/open/<int:id>', methods=['GET','POST'])
+@view.route('/event/open/<int:value>', methods=['GET','POST'])
 @login_required
-def open_event(id): #display each single event and when they were created
-    item = Event.query.get_or_404(id)
+def open_event(value): #display each single event and when they were created
+    item = Event.query.get_or_404(value)
     return render_template("affair.html", item =item, user=current_user)
 
-@view.route('/code-page/<int:id>')
+@view.route('/code-page/<int:n>')
 @login_required
-def display_code(id):
+def display_code(n):
     #display qrcode to each event on the click of button
-    code_id = Event.query.get_or_404(id) #holds the id
-    return render_template("code-page.html", user=current_user, code= code_id )
+    code_id = Event.query.get_or_404(n) #holds the id
+    return render_template("code-page.html", user=current_user, code=code_id )
 
 @view.route('/event/edit/<int:id>', methods=['GET','POST'])
 @login_required
@@ -88,7 +88,7 @@ def edit_event(id):
                 con.session.add(edit)
                 con.session.commit()
                 flash("Event has successfully been edited!", category='success') #change message
-                return redirect(url_for('view.open_event', id=edit.id))
+                return redirect(url_for('view.open_event', value=edit.id))
         return render_template('edit_event.html', form=form, user=current_user, legend='Update Event')
 
 
@@ -172,11 +172,11 @@ def search_students():
         return render_template("search.html", user=current_user,events=event, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
-@view.route('/loadfile/<int:id>', methods=['POST','GET'])
+@view.route('/loadfile/<int:uniq>', methods=['POST','GET'])
 @login_required
-def upload_file(id): #upload file excel file and
+def upload_file(uniq): #upload file excel file and
     form = UploadForm()
-    k = id
+    k = uniq
     if form.validate_on_submit():
         uploaded_file = form.name.data
         filename = secure_filename(form.name.data.filename)
@@ -187,8 +187,8 @@ def upload_file(id): #upload file excel file and
             flash("File was uploaded", category='success')
         else:
             flash("File type is not supported", category='error')
-        return redirect(url_for('view.open_event', id=k))
-    return render_template("upload-file.html",form=form, user=current_user, id=k)
+        return redirect(url_for('view.open_event', value=k))
+    return render_template("upload-file.html",form=form, user=current_user, uniq=k)
 
 def sv(id, uploaded_file,filename):
     #convert to text csv for each event
@@ -219,7 +219,7 @@ def track(id):
     except requests.exceptions.RequestException as e:
         print(e)
         flash("Invalid data", category='error')
-        return redirect(url_for('view.open_event', id=id))
+        return redirect(url_for('view.open_event', value=id))
 
 @view.route('/attendance/<int:id>', methods=['GET','POST'])
 @login_required
@@ -230,7 +230,7 @@ def track_att(id):
         item = Event.query.get_or_404(id)
     else:
         flash("This event does not have any student data, please upload.", category='error')
-        return redirect(url_for('view.open_event', id=id))
+        return redirect(url_for('view.open_event', value=id))
     return render_template("attendance.html", user=current_user, attendance=attendance,item=item)
 
 
@@ -352,10 +352,10 @@ def create_figure(id):
     return fig
 
 
-@view.route("/plot/<int:id>", methods=['GET', 'POST'])
+@view.route("/plot/<int:number>", methods=['GET', 'POST'])
 @login_required
-def visualize(id):
-    fig = create_figure(id)
+def visualize(number):
+    fig = create_figure(number)
     # fig2 = generate_chart(id)
     graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     # graph_json2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
@@ -364,7 +364,7 @@ def visualize(id):
     Chart shows you the amount of students that attended by each class year
         """
     return render_template("figures.html", user=current_user, graphJSON=graph_json,header=header,description=description,
-                           item=id)
+                           item=number)
 
 @view.route('/calendar', methods=['GET','POST'])
 @login_required

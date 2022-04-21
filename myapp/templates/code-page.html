@@ -7,6 +7,6 @@
 {% endfor %}
     <br/>
     <div class="text-center">
-        <img src="{{url_for('static', filename='qrCode' ~ code.id ~ '.png')}}" id="code-pic" alt="image showing qr-code"/>
+        <img src="{{url_for('static', filename='qrCode' ~ code.id ~ '.png')}}" id="code-pic" alt="image displaying qr-code"/>
     </div>
 {% endblock %}
