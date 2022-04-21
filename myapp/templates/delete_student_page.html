@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% block content %}
     <br><br>
-<form method="POST">
+<form method="POST" action="{{ url_for('view.list_delete',val=item.id)}}">
     {{ form.hidden_tag() }}
         <table class="table table-light table-bordered" style="table-layout:auto">
             <thead>
@@ -17,12 +17,10 @@
                     <td>{{ person.name }}</td>
                     <td>{{ person.email }}</td>
                     <td>{{ person.classYear }}</td>
-                    <td>
-{#                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">#}
-{#                             Remove Student</button>#}
-                        <button type="submit" value="{{person.id}}" class="btn btn-danger btn-sm" id="delete_id" name="delete_id">
-                            <i class="bi bi-x-circle-fill"></i> Remove Student</button>
-                    </td>
+                        <td>
+                            <button type="submit" class="btn btn-danger btn-sm" id="delete_id" value="{{person.id}}" name="delete_id">
+                                <i class="bi bi-x-circle-fill"></i> Remove Student</button>
+                        </td>
                 </tr>
             {% endfor %}
             </tbody>
