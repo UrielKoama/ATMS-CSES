@@ -293,36 +293,25 @@ def remove_sheet(filename, student):
             else:
                 f.write(line)
 
-@view.route('/event_number/<int:e_num>/delete_students/<int:no>/', methods=['GET','POST'])
+@view.route('/event_number/<int:e_num>/delete_students', methods=['GET','POST'])
 @login_required
-def delete_students(e_num, no):
-    event_num = Event.query.get_or_404(no)
-    filename = 'app/uploads/Sheet1' + str(no) + '.txt'
+def delete_students(e_num):
+    event_num = Event.query.get_or_404(e_num)
+    filename = 'app/uploads/Sheet1' + str(e_num) + '.txt'
     attendance = Student.query.filter_by(att_ls=e_num).all()
-    if len(attendance) > 1:
-        item_delete = Student.query.get_or_404(no)
-        student = item_delete.name
-        con.session.delete(item_delete)
-        con.session.commit()
-        remove_sheet(filename,student)
-        flash('The student was successfully removed from the list.', category='success')
-        return redirect(url_for('view.list_delete', val=e_num))
-    else:
-        flash("There must be at least 1 person on the attendance list",category='error')
-    return render_template("delete_student_page.html", user=current_user, attendance=attendance, item=event_num)
-
-@view.route('/list_delete/<int:val>/', methods=['GET','POST'])
-@login_required
-def list_delete(val):
-    event_num = Event.query.get_or_404(val)
-    attendance = Student.query.filter_by(att_ls=val).all()
     if request.method == 'POST':
         student_num = request.form.get("delete_id")
-        item_delete = Student.query.get_or_404(student_num)
-        return redirect(url_for('view.delete_students', no=item_delete.id,e_num=val))
+        if len(attendance) > 1:
+            item_delete = Student.query.get_or_404(student_num)
+            student = item_delete.name
+            con.session.delete(item_delete)
+            con.session.commit()
+            remove_sheet(filename,student)
+            flash('The student was successfully removed from the list.', category='success')
+            return redirect(url_for('view.track_att', id=e_num))
+        else:
+            flash("There must be at least 1 person on the attendance list",category='error')
     return render_template("delete_student_page.html", user=current_user, attendance=attendance, item=event_num)
-
-
 
 
 def add_sheet(filename,student_info):
