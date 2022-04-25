@@ -20,16 +20,6 @@
 	    Sorry, your search for: <strong>{{ searched }}</strong> was not found...
         <br/> <br/>
 	{% endif %}
-     {% if student %}
-        {% for found in student %}
-            <div class="">
-             <summary> {{ found.name }}, {{ found.email }} <small> {{ found.classYear }} </small> </summary> <br/>
-            </div>
-        {% endfor %}
-    {% else %}
-	    Sorry, your search for: <strong>{{ searched }}</strong> was not found in any attendance list...
-        <br/> <br/>
-	{% endif %}
 
     <!-- Modal -->
     {% for event in events %}
