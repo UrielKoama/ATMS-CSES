@@ -1,21 +1,15 @@
 {% extends "base.html" %} {% block content %}
     <br/>
-    <h2>You Searched For: <em>{{ searched }}</em></h2>
-    <br/>
+	<h2>You Searched For: <em>{{ searched }}</em></h2>
+	<br/>
     {% if student %}
-        {% for x in event %}
-            <div class="shadow p-3 mb-5 bg-body rounded">
-            <h4><a href="{{ url_for('view.open_event', value=x.id)}}">{{ x.title }}</a></h4>
-            <small>Date of Event: {{ x.date.strftime('%A %b %d %Y at %I:%M %p ') }}</small> <br/><br/>
-{#            {{ x.att_ls|safe }}#}
-        <a href="{{ url_for('view.open_event',value= x.id)}}" class="btn btn-outline-secondary">View Event</a>
-            {% if x.user_id == current_user.id %}
-                <a href="{{ url_for('view.edit_event',id = x.id)}}" class="btn btn-outline-primary">Edit Event</a>
-                <a href="{{ url_for('view.delete_event', num= x.id)}}" class="btn btn-outline-danger">Delete Event</a>
-            {% endif %}<br/><br/>
-            </div><br/>
+        {% for found in student %}
+            <div class="">
+             <summary> {{ found.name }}, {{ found.email }} <small> {{ found.classYear }} </small> </summary> <br/>
+            </div>
         {% endfor %}
     {% else %}
-        Sorry, your search term: <strong>{{ searched }}</strong> was not found...
-    {% endif %}
+	    Sorry, your search for: <strong>{{ searched }}</strong> was not found in any attendance list...
+        <br/> <br/>
+	{% endif %}
 {% endblock content %}

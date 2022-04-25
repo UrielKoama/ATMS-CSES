@@ -121,12 +121,13 @@ def delete_event(num):
     nid =  current_user
     if nid:
         try:
+            title = item_delete.title
             con.session.delete(item_delete)
             con.session.commit()
             delete_pic(n)
             delete_sheet(path)
             # should delete the excel file when event is deleted#delete_excel(file)
-            flash("Event has been deleted")
+            flash("The "+ title + " event has been deleted")
             events = Event.query.order_by(Event.timestamp)
             return redirect(url_for('view.home'))
         except requests.exceptions.RequestException as e:
@@ -159,17 +160,13 @@ def search_events():
 @login_required
 def search_students():
     form = SearchForm()
-    # student = Student.query
     event = Event.query
-    student = Student.query.filter_by(att_ls=id)
+    student = Student.query
     if form.validate_on_submit():
         student = student.filter(Student.name.like('%' + form.searched.data + '%'))
-        # event = Student.query.filter(form.searched.data == Student.name).all()
-        # event = get_referencing_foreign_keys(Event)
-        # found = Student.query.get_or_404(form.searched.data)
-        # student = student.order_by(Student.name).all()
-        # event = event.order_by().all()
-        return render_template("search.html", user=current_user,events=event, searched=form.searched.data, form=form)
+        student = student.order_by(Student.name).all()
+        event = event.filter(Student.name)
+        return render_template("search_students.html", user=current_user,student=student, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
 @view.route('/loadfile/<int:uniq>', methods=['POST','GET'])
@@ -194,14 +191,11 @@ def sv(id, uploaded_file,filename):
     #convert to text csv for each event
     xl = pd.ExcelFile(uploaded_file)
     for sheet in xl.sheet_names:
-        # new_cols = ['n0','email','name','classYear']
-        # df = pd.read_excel(r'myapp/uploads/' + filename, names=new_cols, sheet_name=sheet)
-        data = pd.read_excel(r'myapp/uploads/' + filename, sheet_name=sheet)
-        # file = pd.DataFrame(df, columns=['n0','email','name','classYear'])
-        df = pd.DataFrame(data, columns=['ID', 'Full Name:', 'Email2', 'Class Year:'])
-        df.rename(columns={'Class Year:': 'classYear', 'Full Name:': 'name', 'Email2': 'email', 'ID': 'n0'},
-                inplace=True, errors='raise')
-        file = pd.DataFrame(df, columns=['n0','email','name','classYear'])
+        new_cols = ['n0','email','name','classYear']
+        #df = pd.read_excel(r'app/uploads/' + filename, names=new_cols, sheet_name=sheet)
+        data = pd.read_excel(r'app/uploads/' + filename, sheet_name=sheet, header=None,
+                             names=["n0","email","name",'classYear'],skiprows=1)
+        file = pd.DataFrame(data, columns=['n0','email','name','classYear'])
         path = f'myapp/uploads/'
         file.to_csv(path + sheet + str(id) + '.txt', header=False, index=False, sep=',')
     track(id)
@@ -260,8 +254,8 @@ def get_info(file):
         year = ""
         ## indexes based on where in file
         event = i[0]
-        email = i[-3]
-        first = i[-2]
+        email = i[-2]
+        first = i[-3]
         year = i[-1]
         ## add emails, names, years and id's
         emails.append(email)

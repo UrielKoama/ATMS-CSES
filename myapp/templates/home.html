@@ -26,7 +26,8 @@
                     <button type="button" class="btn-close btn-danger" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                      <p>Are you sure you want to delete this event and all related information? This process cannot be undone.</p>
+                      <p>Are you sure you want to delete the <strong>{{event.title}}</strong>
+                          event and all related information? This process cannot be undone.</p>
                   </div>
                   <div class="modal-footer">
                        <form method="POST" action="{{ url_for('view.delete_event', num= event.id)}}">
