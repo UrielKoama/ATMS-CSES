@@ -193,7 +193,7 @@ def sv(id, uploaded_file,filename):
     for sheet in xl.sheet_names:
         new_cols = ['n0','email','name','classYear']
         #df = pd.read_excel(r'app/uploads/' + filename, names=new_cols, sheet_name=sheet)
-        data = pd.read_excel(r'app/uploads/' + filename, sheet_name=sheet, header=None,
+        data = pd.read_excel(r'myapp/uploads/' + filename, sheet_name=sheet, header=None,
                              names=["n0","email","name",'classYear'],skiprows=1)
         file = pd.DataFrame(data, columns=['n0','email','name','classYear'])
         path = f'myapp/uploads/'
