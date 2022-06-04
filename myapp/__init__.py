@@ -1,16 +1,13 @@
-import os
+from os import environ
+from os import path
 
 from flask import Flask
-from flask_sqlalchemy import  SQLAlchemy
-from os import path
-from flask_login import LoginManager
+from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from flask_datepicker import datepicker
-from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
 from flask_migrate import Migrate
-from os import environ
-import pymysql
-from flask import jsonify
+from flask_sqlalchemy import SQLAlchemy
 
 con = SQLAlchemy()
 migrate = Migrate()
