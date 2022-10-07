@@ -14,31 +14,11 @@ from sqlalchemy import desc
 import json
 import plotly
 import plotly.express as px
-import boto3
+import boto3,botocore
+from flask import Flask
 
 view = Blueprint('view', __name__)
-
-@view.route('/sign_s3/')
-def sign_s3():
-  S3_BUCKET = os.environ.get('S3_BUCKET')
-  file_name = request.args.get('file_name')
-  file_type = request.args.get('file_type')
-  s3 = boto3.client('s3')
-  presigned_post = s3.generate_presigned_post(
-    Bucket = S3_BUCKET,
-    Key = file_name,
-    Fields = {"acl": "public-read", "Content-Type": file_type},
-    Conditions = [
-      {"acl": "public-read"},
-      {"Content-Type": file_type}
-    ],
-    ExpiresIn = 3600
-  )
-  return json.dumps({
-    'data': presigned_post,
-    'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
-  })
-
+app = Flask(__name__)
 
 @view.route('/', methods=['GET','POST']) #url to get to here
 @login_required
@@ -125,8 +105,8 @@ def delete_sheet(p):
     #delete sheet if an event is deleted, so Id's are not mixed up
     if os.path.exists(p):
         os.remove(p)
-    # else:
-    #     flash("Student data was never uploaded", category='warning')
+    else:
+        flash("Student data was never uploaded", category='warning')
 
 def delete_excel(file):
     if os.path.exists(file):
@@ -137,10 +117,10 @@ def delete_excel(file):
 @login_required
 def delete_event(num):
     item_delete = Event.query.get_or_404(num)
-    n = 'app/static/qrCode' + str(num) + '.png'
-    path = 'app/uploads/Sheet1' + str(num) + '.txt'
+    n = 'myapp/static/qrCode' + str(num) + '.png'
+    path = 'myapp/uploads/Sheet1' + str(num) + '.txt'
     #file= 'app/uploads/' + filename + '.xlsx'
-    nid =  current_user
+    nid = current_user
     if nid:
         try:
             title = item_delete.title
@@ -148,7 +128,7 @@ def delete_event(num):
             con.session.commit()
             delete_pic(n)
             delete_sheet(path)
-            # should delete the excel file when event is deleted#delete_excel(file)
+            # should delete the excel file when event is deleted# delete_excel(file)
             flash("The "+ title + " event has been deleted")
             events = Event.query.order_by(Event.timestamp)
             return redirect(url_for('view.home'))
@@ -191,6 +171,43 @@ def search_students():
         return render_template("search_students.html", user=current_user,student=student, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
+def upload_file_to_s3(file, bucket_name, acl="public-read"):
+    try:
+        s3.upload_fileobj(
+            file,
+            bucket_name,
+            file.filename,
+            ExtraArgs={
+                "ACL": acl,
+                "ContentType": file.content_type    #Set appropriate content type as per the file
+            }
+        )
+    except Exception as e:
+        print("Something Happened: ", e)
+        return e
+    return "{}{}".format(app.config["S3_LOCATION"], file.filename)
+
+@view.route('/sign_s3/')
+def sign_s3():
+  S3_BUCKET = os.environ.get('S3_BUCKET')
+  file_name = request.args.get('file_name')
+  file_type = request.args.get('file_type')
+  s3 = boto3.client('s3')
+  presigned_post = s3.generate_presigned_post(
+    Bucket = S3_BUCKET,
+    Key = file_name,
+    Fields = {"acl": "public-read", "Content-Type": file_type},
+    Conditions = [
+      {"acl": "public-read"},
+      {"Content-Type": file_type}
+    ],
+    ExpiresIn = 3600
+  )
+  return json.dumps({
+    'data': presigned_post,
+    'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
+  })
+
 @view.route('/loadfile/<int:uniq>', methods=['POST','GET'])
 @login_required
 def upload_file(uniq): #upload file excel file and
@@ -203,7 +220,9 @@ def upload_file(uniq): #upload file excel file and
         if filename.endswith(('.xlsx', '.xls')):
             uploaded_file.save(f'myapp/uploads/' + filename)
             sv(k,uploaded_file,filename)
+            #output = send_to_s3(filename, view.config["S3_BUCKET"])
             flash("File was uploaded", category='success')
+            #return str(output)
         else:
             flash("File type is not supported", category='error')
         return redirect(url_for('view.open_event', value=k))
@@ -241,7 +260,10 @@ def track(id):
 @login_required
 def track_att(id):
     f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
-    if os.path.exists(f_name):
+    if not os.path.exists(f_name):
+        attendance = Student.query.filter_by(att_ls=id).all()
+        item = Event.query.get_or_404(id)
+    elif os.path.exists(f_name):
         attendance = Student.query.filter_by(att_ls=id).all()
         item = Event.query.get_or_404(id)
     else:
@@ -322,7 +344,8 @@ def delete_students(e_num):
             student = item_delete.name
             con.session.delete(item_delete)
             con.session.commit()
-            remove_sheet(filename,student)
+            if os.path.exists(filename):
+                remove_sheet(filename,student)
             flash('The student was successfully removed from the list.', category='success')
             return redirect(url_for('view.track_att', id=e_num))
         else:
@@ -340,7 +363,7 @@ def add_sheet(filename,student_info):
         data_len = f.read(100)
         if len(data_len) >0:
             f.write("\n")
-        f.write(str(num)+','+email+','+name+','+year) #change if sheet gets fixed
+        f.write(name+','+email+','+year) #change if sheet gets fixed
 
 @view.route('/attendance/add_students/<int:num>', methods=['GET','POST'])
 @login_required
@@ -363,6 +386,8 @@ def add_students(num):
     return render_template("attendance.html", user=current_user, form=form, item=item)
 
 def create_figure(id):
+    filename = 'myapp/uploads/Sheet1' + str(id) + '.txt'
+    # if os.path.exists(filename):
     data = pd.read_csv(r'myapp/uploads/Sheet1' + str(id)  + '.txt', names=['n0','email','name','classYear'])
     df = pd.DataFrame(data)
     fig = px.bar(df, x='classYear',barmode='group',labels={"classYear": "Year"})
