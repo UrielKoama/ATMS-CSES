@@ -15,10 +15,10 @@ import json
 import plotly
 import plotly.express as px
 import boto3,botocore
-from flask import Flask
+
 
 view = Blueprint('view', __name__)
-app = Flask(__name__)
+
 
 @view.route('/', methods=['GET','POST']) #url to get to here
 @login_required
@@ -171,21 +171,21 @@ def search_students():
         return render_template("search_students.html", user=current_user,student=student, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
-def upload_file_to_s3(file, bucket_name, acl="public-read"):
-    try:
-        s3.upload_fileobj(
-            file,
-            bucket_name,
-            file.filename,
-            ExtraArgs={
-                "ACL": acl,
-                "ContentType": file.content_type    #Set appropriate content type as per the file
-            }
-        )
-    except Exception as e:
-        print("Something Happened: ", e)
-        return e
-    return "{}{}".format(app.config["S3_LOCATION"], file.filename)
+# def upload_file_to_s3(file, bucket_name, acl="public-read"):
+#     try:
+#         s3.upload_fileobj(
+#             file,
+#             bucket_name,
+#             file.filename,
+#             ExtraArgs={
+#                 "ACL": acl,
+#                 "ContentType": file.content_type    #Set appropriate content type as per the file
+#             }
+#         )
+#     except Exception as e:
+#         print("Something Happened: ", e)
+#         return e
+#     return "{}{}".format(app.config["S3_LOCATION"], file.filename)
 
 @view.route('/sign_s3/')
 def sign_s3():
