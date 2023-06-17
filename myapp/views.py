@@ -14,7 +14,7 @@ from sqlalchemy import desc
 import json
 import plotly
 import plotly.express as px
-import boto3,botocore
+import boto3
 
 
 view = Blueprint('view', __name__)
@@ -99,14 +99,14 @@ def delete_pic(n): # n is the path
     if os.path.exists(n):
         os.remove(n)
     else:
-        flash("The qr-code does not exist", category='error')
+        flash("The qr-code does not exist", category='info')
 
 def delete_sheet(p):
     #delete sheet if an event is deleted, so Id's are not mixed up
     if os.path.exists(p):
         os.remove(p)
     else:
-        flash("Student data was never uploaded", category='warning')
+        flash("Student data was never uploaded", category='info')
 
 def delete_excel(file):
     if os.path.exists(file):
@@ -171,42 +171,6 @@ def search_students():
         return render_template("search_students.html", user=current_user,student=student, searched=form.searched.data, form=form)
     return render_template("find_form.html", user=current_user, form=form)
 
-# def upload_file_to_s3(file, bucket_name, acl="public-read"):
-#     try:
-#         s3.upload_fileobj(
-#             file,
-#             bucket_name,
-#             file.filename,
-#             ExtraArgs={
-#                 "ACL": acl,
-#                 "ContentType": file.content_type    #Set appropriate content type as per the file
-#             }
-#         )
-#     except Exception as e:
-#         print("Something Happened: ", e)
-#         return e
-#     return "{}{}".format(app.config["S3_LOCATION"], file.filename)
-
-@view.route('/sign_s3/')
-def sign_s3():
-  S3_BUCKET = os.environ.get('S3_BUCKET')
-  file_name = request.args.get('file_name')
-  file_type = request.args.get('file_type')
-  s3 = boto3.client('s3')
-  presigned_post = s3.generate_presigned_post(
-    Bucket = S3_BUCKET,
-    Key = file_name,
-    Fields = {"acl": "public-read", "Content-Type": file_type},
-    Conditions = [
-      {"acl": "public-read"},
-      {"Content-Type": file_type}
-    ],
-    ExpiresIn = 3600
-  )
-  return json.dumps({
-    'data': presigned_post,
-    'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
-  })
 
 @view.route('/loadfile/<int:uniq>', methods=['POST','GET'])
 @login_required
@@ -260,14 +224,14 @@ def track(id):
 @login_required
 def track_att(id):
     f_name = 'myapp/uploads/Sheet1' + str(id) + '.txt'
-    if not os.path.exists(f_name):
+    if os.path.exists(f_name):
         attendance = Student.query.filter_by(att_ls=id).all()
         item = Event.query.get_or_404(id)
-    elif os.path.exists(f_name):
-        attendance = Student.query.filter_by(att_ls=id).all()
-        item = Event.query.get_or_404(id)
+    # elif not os.path.exists(f_name):
+    #     attendance = Student.query.filter_by(att_ls=id).all()
+    #     item = Event.query.get_or_404(id)
     else:
-        flash("This event does not have any student data, please upload.", category='error')
+        flash("This event does not have an attendance list, please upload.", category='error')
         return redirect(url_for('view.open_event', value=id))
     return render_template("attendance.html", user=current_user, attendance=attendance,item=item)
 
@@ -346,7 +310,7 @@ def delete_students(e_num):
             con.session.commit()
             if os.path.exists(filename):
                 remove_sheet(filename,student)
-            flash('The student was successfully removed from the list.', category='success')
+            flash(student + ' was successfully removed from the list.', category='success')
             return redirect(url_for('view.track_att', id=e_num))
         else:
             flash("There must be at least 1 person on the attendance list",category='error')
@@ -414,3 +378,6 @@ def calendar():
     events = Event.query.all()
     return render_template('calendar.html', user=current_user, data=events)
 
+
+def errorhandler(param):
+    return None
