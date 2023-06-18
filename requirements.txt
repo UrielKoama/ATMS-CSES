@@ -15,7 +15,6 @@ click==8.0.3
 colorama==0.4.4
 cryptography==39.0.1
 cycler==0.11.0
-Django==4.0.2
 dnspython==2.2.0
 dominate==2.6.0
 email-validator==1.1.3
